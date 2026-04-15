@@ -241,6 +241,66 @@
 
                 {{-- Delete Account Section --}}
                 <section id="account-section" class="settings-section">
+
+                    {{-- Connected Accounts --}}
+                    <div class="settings-card" style="margin-bottom:24px;">
+                        <h2>Connected Accounts</h2>
+                        <p class="settings-card-description">Manage your linked social login providers.</p>
+
+                        @error('google_disconnect')
+                            <div class="alert alert-error" style="margin-bottom:16px;">{{ $message }}</div>
+                        @enderror
+
+                        @if(session('status') === 'google-disconnected')
+                            <div class="alert alert-success" style="margin-bottom:16px;">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                                Google account disconnected successfully.
+                            </div>
+                        @endif
+
+                        <div style="display:flex;align-items:center;justify-content:space-between;gap:16px;padding:16px;border:1px solid #e5e7eb;border-radius:10px;">
+                            <div style="display:flex;align-items:center;gap:12px;">
+                                {{-- Google logo --}}
+                                <svg width="24" height="24" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M43.611 20.083H42V20H24v8h11.303c-1.649 4.657-6.08 8-11.303 8-6.627 0-12-5.373-12-12s5.373-12 12-12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4 12.955 4 4 12.955 4 24s8.955 20 20 20 20-8.955 20-20c0-1.341-.138-2.65-.389-3.917z" fill="#FFC107"/>
+                                    <path d="M6.306 14.691l6.571 4.819C14.655 15.108 19.001 12 24 12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4 16.318 4 9.656 8.337 6.306 14.691z" fill="#FF3D00"/>
+                                    <path d="M24 44c5.166 0 9.86-1.977 13.409-5.192l-6.19-5.238A11.91 11.91 0 0124 36c-5.202 0-9.619-3.317-11.283-7.946l-6.522 5.025C9.505 39.556 16.227 44 24 44z" fill="#4CAF50"/>
+                                    <path d="M43.611 20.083H42V20H24v8h11.303a12.04 12.04 0 01-4.087 5.571l.003-.002 6.19 5.238C36.971 39.205 44 34 44 24c0-1.341-.138-2.65-.389-3.917z" fill="#1976D2"/>
+                                </svg>
+                                <div>
+                                    <div style="font-size:15px;font-weight:500;color:#111;">Google</div>
+                                    @if($user->isGoogleUser())
+                                        <div style="font-size:13px;color:#16a34a;">✓ Connected — {{ $user->email }}</div>
+                                    @else
+                                        <div style="font-size:13px;color:#9ca3af;">Not connected</div>
+                                    @endif
+                                </div>
+                            </div>
+
+                            @if($user->isGoogleUser())
+                                @if($user->hasPassword())
+                                    <form method="POST" action="{{ route('auth.google.disconnect') }}"
+                                          onsubmit="return confirm('Disconnect Google? You will need to use your email and password to sign in.')">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="btn btn-outline btn-sm" style="color:var(--danger);border-color:var(--danger);">
+                                            Disconnect
+                                        </button>
+                                    </form>
+                                @else
+                                    <span style="font-size:12px;color:#9ca3af;max-width:200px;text-align:right;">
+                                        Set a password first to disconnect Google
+                                    </span>
+                                @endif
+                            @else
+                                <a href="{{ route('auth.google.redirect') }}" class="btn btn-outline btn-sm">
+                                    Connect Google
+                                </a>
+                            @endif
+                        </div>
+                    </div>
+
+                    {{-- Delete Account --}}
                     <div class="settings-card settings-card-danger">
                         <h2>Delete Account</h2>
                         <p class="settings-card-description">Once your account is deleted, all of its resources and data will be permanently deleted. Before deleting your account, please download any data or information that you wish to retain.</p>

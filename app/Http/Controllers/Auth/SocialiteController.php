@@ -62,6 +62,30 @@ class SocialiteController extends Controller
     }
 
     /**
+     * Disconnect Google from the user's account.
+     * Only allowed if the user has a password set (otherwise they'd be locked out).
+     */
+    public function disconnectGoogle(): \Illuminate\Http\RedirectResponse
+    {
+        $user = Auth::user();
+
+        if (! $user->hasPassword()) {
+            return back()->withErrors([
+                'google_disconnect' => 'Set a password first before disconnecting Google, otherwise you won\'t be able to sign in.',
+            ]);
+        }
+
+        $user->update([
+            'google_id' => null,
+            // If avatar is a Google URL, clear it so they can upload their own
+            'avatar'    => str_starts_with($user->avatar ?? '', 'http') ? null : $user->avatar,
+        ]);
+
+        return redirect()->route('profile.edit')
+            ->with('status', 'google-disconnected');
+    }
+
+    /**
      * Generate a unique username from the Google display name.
      */
     private function generateUsername(string $name): string

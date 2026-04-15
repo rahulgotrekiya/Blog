@@ -71,4 +71,7 @@ Route::middleware('auth')->group(function () {
     Route::get('auth/complete-profile', [CompleteProfileController::class, 'show'])
         ->name('auth.complete-profile');
     Route::post('auth/complete-profile', [CompleteProfileController::class, 'store']);
+
+    Route::delete('auth/google/disconnect', [SocialiteController::class, 'disconnectGoogle'])
+        ->name('auth.google.disconnect');
 });
