@@ -68,6 +68,30 @@
         </div>
     @endif
 
+    {{-- Email Verification Banner --}}
+    @auth
+        @if(!auth()->user()->hasVerifiedEmail())
+            <div style="background:#fffbeb;border-bottom:1px solid #fde68a;padding:10px 0;">
+                <div class="container" style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;">
+                    <span style="font-size:14px;color:#92400e;">
+                        ⚠️ Your email address is not verified.
+                    </span>
+                    <form method="POST" action="{{ route('verification.send') }}" style="margin:0;">
+                        @csrf
+                        <button type="submit" style="background:none;border:none;font-size:13px;font-weight:600;color:#b45309;cursor:pointer;text-decoration:underline;padding:0;">
+                            Resend verification email →
+                        </button>
+                    </form>
+                </div>
+            </div>
+            @if(session('status') === 'verification-link-sent')
+                <div class="container" style="padding-top:10px;">
+                    <div class="alert alert-success">Verification email sent! Check your inbox.</div>
+                </div>
+            @endif
+        @endif
+    @endauth
+
     {{-- Page Content --}}
     <main>
         @yield('content')
