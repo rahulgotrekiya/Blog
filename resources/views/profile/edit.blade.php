@@ -52,16 +52,19 @@
                                 <label class="form-label">Profile Picture</label>
                                 <div class="avatar-upload-container">
                                     <div class="avatar-preview">
-                                        @if(auth()->user()->avatar)
-                                            <img src="{{ Storage::url(auth()->user()->avatar) }}" alt="Avatar" class="avatar avatar-lg" id="avatar-preview-img">
+                                        @if($user->avatarUrl())
+                                            <img src="{{ $user->avatarUrl() }}" alt="Avatar" class="avatar avatar-lg" id="avatar-preview-img">
                                         @else
-                                            <span class="avatar avatar-lg avatar-placeholder" id="avatar-preview-placeholder">{{ strtoupper(substr(auth()->user()->name, 0, 1)) }}</span>
+                                            <span class="avatar avatar-lg avatar-placeholder" id="avatar-preview-placeholder">{{ strtoupper(substr($user->name, 0, 1)) }}</span>
                                         @endif
                                     </div>
                                     <div class="avatar-upload-controls">
                                         <input type="file" id="avatar" name="avatar" accept="image/jpeg,image/png,image/jpg,image/gif" class="avatar-input" onchange="previewAvatar(event)">
                                         <label for="avatar" class="btn btn-outline btn-sm">Choose Photo</label>
                                         <span class="form-hint">JPG, PNG or GIF. Max 2MB.</span>
+                                        @if($user->isGoogleUser() && str_starts_with($user->avatar ?? '', 'http'))
+                                            <span class="form-hint" style="color:#16a34a;">✓ Using your Google profile photo</span>
+                                        @endif
                                     </div>
                                 </div>
                                 @error('avatar')
@@ -162,34 +165,43 @@
                 {{-- Password Section --}}
                 <section id="password-section" class="settings-section">
                     <div class="settings-card">
-                        <h2>Update Password</h2>
-                        <p class="settings-card-description">Ensure your account is using a long, random password to stay secure.</p>
+                        @if($user->hasPassword())
+                            <h2>Update Password</h2>
+                            <p class="settings-card-description">Ensure your account is using a long, random password to stay secure.</p>
+                        @else
+                            <h2>Set a Password</h2>
+                            <p class="settings-card-description">
+                                Your account is currently linked via Google. Set a password to also sign in with email and password.
+                            </p>
+                        @endif
 
                         <form method="POST" action="{{ route('password.update') }}" class="settings-form">
                             @csrf
                             @method('put')
 
+                            @if($user->hasPassword())
                             <div class="form-group">
                                 <label for="update_password_current_password" class="form-label">Current Password</label>
-                                <input 
-                                    type="password" 
-                                    id="update_password_current_password" 
-                                    name="current_password" 
-                                    class="form-input @error('current_password', 'updatePassword') error @enderror" 
+                                <input
+                                    type="password"
+                                    id="update_password_current_password"
+                                    name="current_password"
+                                    class="form-input @error('current_password', 'updatePassword') error @enderror"
                                     autocomplete="current-password"
                                 >
                                 @error('current_password', 'updatePassword')
                                     <span class="form-error">{{ $message }}</span>
                                 @enderror
                             </div>
+                            @endif
 
                             <div class="form-group">
                                 <label for="update_password_password" class="form-label">New Password</label>
-                                <input 
-                                    type="password" 
-                                    id="update_password_password" 
-                                    name="password" 
-                                    class="form-input @error('password', 'updatePassword') error @enderror" 
+                                <input
+                                    type="password"
+                                    id="update_password_password"
+                                    name="password"
+                                    class="form-input @error('password', 'updatePassword') error @enderror"
                                     autocomplete="new-password"
                                 >
                                 @error('password', 'updatePassword')
@@ -199,11 +211,11 @@
 
                             <div class="form-group">
                                 <label for="update_password_password_confirmation" class="form-label">Confirm Password</label>
-                                <input 
-                                    type="password" 
-                                    id="update_password_password_confirmation" 
-                                    name="password_confirmation" 
-                                    class="form-input @error('password_confirmation', 'updatePassword') error @enderror" 
+                                <input
+                                    type="password"
+                                    id="update_password_password_confirmation"
+                                    name="password_confirmation"
+                                    class="form-input @error('password_confirmation', 'updatePassword') error @enderror"
                                     autocomplete="new-password"
                                 >
                                 @error('password_confirmation', 'updatePassword')
@@ -212,13 +224,15 @@
                             </div>
 
                             <div class="form-actions">
-                                <button type="submit" class="btn btn-dark">Update Password</button>
+                                <button type="submit" class="btn btn-dark">
+                                    {{ $user->hasPassword() ? 'Update Password' : 'Set Password' }}
+                                </button>
                             </div>
 
                             @if (session('status') === 'password-updated')
                                 <div class="alert alert-success" style="margin-top:16px;">
                                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg>
-                                    Password updated successfully.
+                                    Password {{ $user->hasPassword() ? 'updated' : 'set' }} successfully.
                                 </div>
                             @endif
                         </form>
@@ -244,25 +258,31 @@
     <div class="modal-overlay" onclick="hideDeleteModal()"></div>
     <div class="modal-content">
         <h2>Are you sure?</h2>
-        <p>Once your account is deleted, all of its resources and data will be permanently deleted. Please enter your password to confirm you would like to permanently delete your account.</p>
+        <p>Once your account is deleted, all of its resources and data will be permanently deleted.</p>
 
         <form method="POST" action="{{ route('profile.destroy') }}" style="margin-top:24px;">
             @csrf
             @method('delete')
 
+            @if(auth()->user()->hasPassword())
             <div class="form-group">
-                <label for="password" class="form-label">Password</label>
-                <input 
-                    type="password" 
-                    id="password" 
-                    name="password" 
-                    class="form-input @error('password', 'userDeletion') error @enderror" 
+                <label for="password" class="form-label">Please enter your password to confirm</label>
+                <input
+                    type="password"
+                    id="password"
+                    name="password"
+                    class="form-input @error('password', 'userDeletion') error @enderror"
                     placeholder="Enter your password"
                 >
                 @error('password', 'userDeletion')
                     <span class="form-error">{{ $message }}</span>
                 @enderror
             </div>
+            @else
+            <div style="background:#fef3c7;border:1px solid #fcd34d;border-radius:8px;padding:12px 14px;font-size:13px;color:#92400e;margin-bottom:16px;">
+                ⚠️ This will permanently delete your account and all your content.
+            </div>
+            @endif
 
             <div class="modal-actions">
                 <button type="button" class="btn" onclick="hideDeleteModal()">Cancel</button>

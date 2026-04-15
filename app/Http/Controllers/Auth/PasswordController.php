@@ -12,15 +12,26 @@ class PasswordController extends Controller
 {
     /**
      * Update the user's password.
+     * Google-only users (password = null) skip the current_password check.
      */
     public function update(Request $request): RedirectResponse
     {
-        $validated = $request->validateWithBag('updatePassword', [
-            'current_password' => ['required', 'current_password'],
-            'password' => ['required', Password::defaults(), 'confirmed'],
-        ]);
+        $user = $request->user();
 
-        $request->user()->update([
+        if ($user->hasPassword()) {
+            // Normal flow: require current password
+            $validated = $request->validateWithBag('updatePassword', [
+                'current_password' => ['required', 'current_password'],
+                'password'         => ['required', Password::defaults(), 'confirmed'],
+            ]);
+        } else {
+            // Google user setting a password for the first time — no current password needed
+            $validated = $request->validateWithBag('updatePassword', [
+                'password' => ['required', Password::defaults(), 'confirmed'],
+            ]);
+        }
+
+        $user->update([
             'password' => Hash::make($validated['password']),
         ]);
 

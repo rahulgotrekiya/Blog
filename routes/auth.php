@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
+use App\Http\Controllers\Auth\CompleteProfileController;
 use App\Http\Controllers\Auth\ConfirmablePasswordController;
 use App\Http\Controllers\Auth\EmailVerificationNotificationController;
 use App\Http\Controllers\Auth\EmailVerificationPromptController;
@@ -64,3 +65,10 @@ Route::get('auth/google/redirect', [SocialiteController::class, 'redirectToGoogl
     ->name('auth.google.redirect');
 Route::get('auth/google/callback', [SocialiteController::class, 'handleGoogleCallback'])
     ->name('auth.google.callback');
+
+// New Google user onboarding (complete profile setup)
+Route::middleware('auth')->group(function () {
+    Route::get('auth/complete-profile', [CompleteProfileController::class, 'show'])
+        ->name('auth.complete-profile');
+    Route::post('auth/complete-profile', [CompleteProfileController::class, 'store']);
+});

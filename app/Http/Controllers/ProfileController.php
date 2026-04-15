@@ -31,11 +31,12 @@ class ProfileController extends Controller
         
         // Handle avatar upload
         if ($request->hasFile('avatar')) {
-            // Delete old avatar if exists
-            if ($request->user()->avatar) {
-                Storage::disk('public')->delete($request->user()->avatar);
+            // Delete old avatar only if it's a local storage file (not a Google URL)
+            $oldAvatar = $request->user()->avatar;
+            if ($oldAvatar && !str_starts_with($oldAvatar, 'http')) {
+                Storage::disk('public')->delete($oldAvatar);
             }
-            
+
             // Store new avatar in storage/app/public/avatars/
             $path = $request->file('avatar')->store('avatars', 'public');
             $data['avatar'] = $path;
@@ -54,17 +55,19 @@ class ProfileController extends Controller
 
     /**
      * Delete the user's account.
+     * Google-only users can delete without providing a password.
      */
     public function destroy(Request $request): RedirectResponse
     {
-        $request->validateWithBag('userDeletion', [
-            'password' => ['required', 'current_password'],
-        ]);
-
         $user = $request->user();
 
-        Auth::logout();
+        if ($user->hasPassword()) {
+            $request->validateWithBag('userDeletion', [
+                'password' => ['required', 'current_password'],
+            ]);
+        }
 
+        Auth::logout();
         $user->delete();
 
         $request->session()->invalidate();

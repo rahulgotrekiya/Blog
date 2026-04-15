@@ -39,6 +39,9 @@ class SocialiteController extends Controller
             if (! $user->google_id) {
                 $user->update(['google_id' => $googleUser->getId()]);
             }
+
+            Auth::login($user, remember: true);
+            return redirect()->intended(route('dashboard'));
         } else {
             // Create new user from Google data
             $user = User::create([
@@ -47,15 +50,15 @@ class SocialiteController extends Controller
                 'email'             => $googleUser->getEmail(),
                 'google_id'         => $googleUser->getId(),
                 'avatar'            => $googleUser->getAvatar(),
-                'email_verified_at' => now(), // Google accounts are pre-verified
+                'email_verified_at' => now(),
                 'password'          => null,
                 'role'              => 'author',
             ]);
+
+            Auth::login($user, remember: true);
+            // New user → send to onboarding to review/complete their profile
+            return redirect()->route('auth.complete-profile');
         }
-
-        Auth::login($user, remember: true);
-
-        return redirect()->intended(route('dashboard'));
     }
 
     /**
