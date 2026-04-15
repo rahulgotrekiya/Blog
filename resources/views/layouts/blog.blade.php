@@ -24,8 +24,8 @@
                     @endif
                     <li class="dropdown">
                         <a href="javascript:void(0)" class="nav-link" onclick="this.parentElement.classList.toggle('open')">
-                            @if(auth()->user()->avatar)
-                                <img src="{{ Storage::url(auth()->user()->avatar) }}" class="avatar" alt="{{ auth()->user()->name }}">
+                            @if(auth()->user()->avatarUrl())
+                                <img src="{{ auth()->user()->avatarUrl() }}" class="avatar" alt="{{ auth()->user()->name }}" referrerpolicy="no-referrer">
                             @else
                                 <span class="avatar avatar-placeholder">{{ strtoupper(substr(auth()->user()->name, 0, 1)) }}</span>
                             @endif

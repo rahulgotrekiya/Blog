@@ -53,7 +53,7 @@
                                 <div class="avatar-upload-container">
                                     <div class="avatar-preview">
                                         @if($user->avatarUrl())
-                                            <img src="{{ $user->avatarUrl() }}" alt="Avatar" class="avatar avatar-lg" id="avatar-preview-img">
+                                            <img src="{{ $user->avatarUrl() }}" alt="Avatar" class="avatar avatar-lg" id="avatar-preview-img" referrerpolicy="no-referrer">
                                         @else
                                             <span class="avatar avatar-lg avatar-placeholder" id="avatar-preview-placeholder">{{ strtoupper(substr($user->name, 0, 1)) }}</span>
                                         @endif

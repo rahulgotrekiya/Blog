@@ -87,7 +87,7 @@
             {{-- Header --}}
             <div style="text-align:center;margin-bottom:32px;">
                 @if($user->avatarUrl())
-                    <img src="{{ $user->avatarUrl() }}" alt="{{ $user->name }}" class="onboarding-avatar" style="margin:0 auto 12px;">
+                    <img src="{{ $user->avatarUrl() }}" alt="{{ $user->name }}" class="onboarding-avatar" style="margin:0 auto 12px;" referrerpolicy="no-referrer">
                 @else
                     <div class="onboarding-avatar-placeholder" style="margin:0 auto 12px;">
                         {{ strtoupper(substr($user->name, 0, 1)) }}

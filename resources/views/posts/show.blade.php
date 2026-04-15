@@ -12,8 +12,8 @@
             <p class="article-excerpt">{{ $post->excerpt }}</p>
         @endif
         <div class="article-meta">
-            @if($post->user->avatar)
-                <img src="{{ Storage::url($post->user->avatar) }}" class="avatar avatar-lg" alt="{{ $post->user->name }}">
+            @if($post->user->avatarUrl())
+                <img src="{{ $post->user->avatarUrl() }}" class="avatar avatar-lg" alt="{{ $post->user->name }}" referrerpolicy="no-referrer">
             @else
                 <span class="avatar avatar-lg avatar-placeholder">{{ strtoupper(substr($post->user->name, 0, 1)) }}</span>
             @endif
@@ -92,8 +92,8 @@
         <div class="comment-item">
             <div class="comment-header">
                 <div class="comment-author">
-                    @if($comment->user->avatar)
-                        <img src="{{ Storage::url($comment->user->avatar) }}" class="avatar" alt="">
+                    @if($comment->user->avatarUrl())
+                        <img src="{{ $comment->user->avatarUrl() }}" class="avatar" alt="" referrerpolicy="no-referrer">
                     @else
                         <span class="avatar avatar-placeholder" style="width:28px;height:28px;font-size:12px;">{{ strtoupper(substr($comment->user->name, 0, 1)) }}</span>
                     @endif

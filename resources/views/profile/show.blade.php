@@ -7,8 +7,8 @@
     {{-- Profile Header --}}
     <div class="profile-header animate-fade-in-up">
         <div class="profile-header-inner">
-            @if($user->avatar)
-                <img src="{{ Storage::url($user->avatar) }}" class="avatar avatar-lg" alt="{{ $user->name }}">
+            @if($user->avatarUrl())
+                <img src="{{ $user->avatarUrl() }}" class="avatar avatar-lg" alt="{{ $user->name }}" referrerpolicy="no-referrer">
             @else
                 <span class="avatar avatar-lg avatar-placeholder">{{ strtoupper(substr($user->name, 0, 1)) }}</span>
             @endif
