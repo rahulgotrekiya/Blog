@@ -39,12 +39,18 @@ cd Blog
 # 2. Install PHP dependencies
 composer install
 
-# 3. Environment setup
+# 3. Install Node dependencies and build assets (CSS & JS)
+npm install && npm run build
+
+# 4. Environment setup
 cp .env.example .env
 php artisan key:generate
 
-# 4. Configure your database credentials in .env, then run migrations and seed
+# 5. Configure your database credentials in .env, then run migrations and seed
 php artisan migrate --seed
+
+# 6. Create the storage symlink (required for avatar and image uploads)
+php artisan storage:link
 ```
 
 ### Google OAuth Setup
@@ -105,8 +111,9 @@ database/
 - [ ] **AI Integration** — AI-assisted post writing or content suggestions
 - [ ] **Messaging / Email** — In-app messaging or email notifications between users
 - [ ] **Login to Read More** — Restrict full post content to logged-in users only
-- [ ] **Navigation Bar** — Add public nav with Home, About, and Contact Us pages
-- [ ] **Contact Us Page** — Contact form that sends messages to the admin panel
+- [x] **Navigation Bar** — Public nav with Home, About, and Contact Us pages added
+- [x] **About Page** — Static page describing the project
+- [ ] **Contact Us (Admin Inbox)** — Contact form that sends messages to the admin panel
 - [ ] **Remove Comment Count** — Clean up comment count display from the admin panel
 
 ---
