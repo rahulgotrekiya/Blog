@@ -12,7 +12,8 @@ class CategoryController extends Controller
     {
         $posts = $category->posts()
             ->published()
-            ->with(['user', 'likes'])
+            ->with(['user'])
+            ->withCount('likes')
             ->latest('published_at')
             ->paginate(12);
 

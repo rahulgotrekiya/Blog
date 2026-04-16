@@ -58,7 +58,8 @@ class Post extends Model
 
     public function scopePublished($query)
     {
-        return $query->where('is_published', true);
+        return $query->where('is_published', true)
+                     ->whereNotNull('published_at');
     }
 
     public function scopeFeatured($query)

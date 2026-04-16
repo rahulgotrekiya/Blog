@@ -59,9 +59,9 @@
                                         @endif
                                     </div>
                                     <div class="avatar-upload-controls">
-                                        <input type="file" id="avatar" name="avatar" accept="image/jpeg,image/png,image/jpg,image/gif" class="avatar-input" onchange="previewAvatar(event)">
+                                        <input type="file" id="avatar" name="avatar" accept="image/jpeg,image/png,image/jpg,image/gif,image/webp" class="avatar-input" onchange="previewAvatar(event)">
                                         <label for="avatar" class="btn btn-outline btn-sm">Choose Photo</label>
-                                        <span class="form-hint">JPG, PNG or GIF. Max 2MB.</span>
+                                        <span class="form-hint">JPG, PNG, GIF or WebP. Max 2MB.</span>
                                         @if($user->isGoogleUser() && str_starts_with($user->avatar ?? '', 'http'))
                                             <span class="form-hint" style="color:#16a34a;">✓ Using your Google profile photo</span>
                                         @endif
@@ -140,9 +140,17 @@
                                     name="bio" 
                                     class="form-textarea @error('bio') error @enderror" 
                                     rows="4" 
+                                    maxlength="160"
+                                    oninput="updateBioCounter(this)"
                                     placeholder="Write a short bio about yourself..."
                                 >{{ old('bio', $user->bio) }}</textarea>
-                                <span class="form-hint">Brief description for your profile. Maximum 160 characters.</span>
+                                <div style="display:flex;justify-content:space-between;align-items:center;margin-top:4px;">
+                                    <span class="form-hint">Brief description for your profile.</span>
+                                    <span id="bio-counter" style="font-size:12px;color:var(--light-gray);"
+                                          class="{{ strlen(old('bio', $user->bio ?? '')) > 140 ? 'text-warning' : '' }}">
+                                        {{ strlen(old('bio', $user->bio ?? '')) }}/160
+                                    </span>
+                                </div>
                                 @error('bio')
                                     <span class="form-error">{{ $message }}</span>
                                 @enderror
@@ -412,5 +420,18 @@ function previewAvatar(event) {
         reader.readAsDataURL(file);
     }
 }
+// Bio character counter
+function updateBioCounter(textarea) {
+    const counter = document.getElementById('bio-counter');
+    const len = textarea.value.length;
+    counter.textContent = len + '/160';
+    counter.style.color = len > 140 ? '#ef4444' : 'var(--light-gray)';
+}
+
+// Initialise counter on page load
+document.addEventListener('DOMContentLoaded', function() {
+    const bio = document.getElementById('bio');
+    if (bio) updateBioCounter(bio);
+});
 </script>
 @endsection

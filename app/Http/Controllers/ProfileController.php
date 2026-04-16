@@ -67,8 +67,21 @@ class ProfileController extends Controller
             ]);
         }
 
+        // Collect file paths BEFORE deletion (cascade removes DB rows)
+        $avatarPath = ($user->avatar && !str_starts_with($user->avatar, 'http'))
+            ? $user->avatar : null;
+        $postImages = $user->posts->pluck('featured_image')->filter()->values();
+
         Auth::logout();
         $user->delete();
+
+        // Clean up storage files after DB deletion
+        if ($avatarPath) {
+            Storage::disk('public')->delete($avatarPath);
+        }
+        foreach ($postImages as $image) {
+            Storage::disk('public')->delete($image);
+        }
 
         $request->session()->invalidate();
         $request->session()->regenerateToken();

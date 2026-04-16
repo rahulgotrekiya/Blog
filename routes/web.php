@@ -34,11 +34,11 @@ Route::middleware('auth')->group(function () {
     Route::delete('/post/{post}', [PostController::class, 'destroy'])->name('post.destroy');
 
     // Comments
-    Route::post('/post/{post}/comment', [CommentController::class, 'store'])->name('comment.store');
+    Route::post('/post/{post}/comment', [CommentController::class, 'store'])->name('comment.store')->middleware('throttle:10,1');
     Route::delete('/comment/{comment}', [CommentController::class, 'destroy'])->name('comment.destroy');
 
     // Likes
-    Route::post('/post/{post}/like', [LikeController::class, 'toggle'])->name('like.toggle');
+    Route::post('/post/{post}/like', [LikeController::class, 'toggle'])->name('like.toggle')->middleware('throttle:30,1');
 
     // Profile settings (Breeze)
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');

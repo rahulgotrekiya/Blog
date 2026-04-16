@@ -58,7 +58,7 @@
                             @endif
                             <span>{{ $post->readingTime() }}</span>
                             <span>·</span>
-                            <span>{{ $post->likes->count() }} likes</span>
+                            <span>{{ $post->likes_count }} likes</span>
                         </div>
                     </div>
                     @if($post->featured_image)

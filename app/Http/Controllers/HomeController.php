@@ -13,7 +13,8 @@ class HomeController extends Controller
         $featured = Post::published()->featured()->with(['user', 'category'])->latest('published_at')->first();
 
         $posts = Post::published()
-            ->with(['user', 'category', 'likes'])
+            ->with(['user', 'category'])
+            ->withCount('likes')
             ->latest('published_at')
             ->paginate(12);
 

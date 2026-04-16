@@ -28,12 +28,12 @@ class ProfileUpdateRequest extends FormRequest
             'username' => [
                 'required',
                 'string',
-                'max:255',
+                'max:50',
                 'alpha_dash',
                 Rule::unique(User::class)->ignore($this->user()->id),
             ],
             'bio' => ['nullable', 'string', 'max:160'],
-            'avatar' => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif', 'max:2048'], // Max 2MB
+            'avatar' => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif,webp', 'max:2048'],
         ];
     }
 }

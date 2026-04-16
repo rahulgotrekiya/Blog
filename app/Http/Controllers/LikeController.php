@@ -10,14 +10,14 @@ class LikeController extends Controller
     public function toggle(Post $post)
     {
         $user = auth()->user();
-        $existing = $user->likes()->where('post_id', $post->id)->first();
 
-        if ($existing) {
-            $existing->delete();
-            $liked = false;
-        } else {
+        try {
             $user->likes()->create(['post_id' => $post->id]);
             $liked = true;
+        } catch (\Illuminate\Database\UniqueConstraintViolationException $e) {
+            // Already liked — unlike it instead
+            $user->likes()->where('post_id', $post->id)->delete();
+            $liked = false;
         }
 
         if (request()->ajax()) {
