@@ -23,6 +23,7 @@ class DatabaseSeeder extends Seeder
             'password' => Hash::make('password'),
             'role' => 'admin',
             'bio' => 'Platform administrator and editor.',
+            'email_verified_at' => now(),
         ]);
 
         // Create Authors
@@ -43,6 +44,7 @@ class DatabaseSeeder extends Seeder
                 'password' => Hash::make('password'),
                 'role' => 'author',
                 'bio' => $data['bio'],
+                'email_verified_at' => now(),
             ]);
         }
 

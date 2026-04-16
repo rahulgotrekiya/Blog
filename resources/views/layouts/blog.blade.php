@@ -17,6 +17,10 @@
             <a href="{{ route('home') }}" class="navbar-brand">Blog.</a>
 
             <ul class="navbar-nav">
+                <li><a href="{{ route('home') }}" class="nav-link {{ request()->routeIs('home') ? 'active' : '' }}">Home</a></li>
+                <li><a href="{{ route('about') }}" class="nav-link {{ request()->routeIs('about') ? 'active' : '' }}">About</a></li>
+                <li><a href="{{ route('contact') }}" class="nav-link {{ request()->routeIs('contact') ? 'active' : '' }}">Contact Us</a></li>
+
                 @auth
                     <li><a href="{{ route('post.create') }}" class="nav-link">Write</a></li>
                     @if(auth()->user()->isAdmin())
@@ -105,9 +109,8 @@
                 <span class="footer-brand">Blog.</span>
                 <ul class="footer-links">
                     <li><a href="{{ route('home') }}">Home</a></li>
-                    <li><a href="#">About</a></li>
-                    <li><a href="#">Terms</a></li>
-                    <li><a href="#">Privacy</a></li>
+                    <li><a href="{{ route('about') }}">About</a></li>
+                    <li><a href="{{ route('contact') }}">Contact Us</a></li>
                 </ul>
             </div>
         </footer>
