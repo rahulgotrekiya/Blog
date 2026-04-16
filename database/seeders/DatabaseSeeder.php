@@ -28,7 +28,7 @@ class DatabaseSeeder extends Seeder
         // Create Authors
         $authors = [];
         $authorData = [
-            ['name' => 'Sarah Chen', 'username' => 'sarahchen', 'bio' => 'Writer, thinker, coffee enthusiast. Exploring ideas at the intersection of technology and humanity.'],
+            ['name' => 'Test Author', 'username' => 'testauthor', 'bio' => 'Writer, thinker, coffee enthusiast. Exploring ideas at the intersection of technology and humanity.'],
             ['name' => 'Marcus Johnson', 'username' => 'marcusj', 'bio' => 'Software engineer by day, storyteller by night. Writing about code, life, and everything in between.'],
             ['name' => 'Priya Sharma', 'username' => 'priyawrites', 'bio' => 'Designer and creative writer. Passionate about visual storytelling and user experience.'],
             ['name' => 'Alex Rivera', 'username' => 'alexr', 'bio' => 'Entrepreneur and tech writer. Building the future one article at a time.'],
