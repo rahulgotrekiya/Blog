@@ -40,17 +40,13 @@
                         <td>{{ $user->created_at->format('M d, Y') }}</td>
                         <td>
                             <div class="actions">
-                                <form method="POST" action="{{ route('admin.users.toggleRole', $user) }}">
-                                    @csrf @method('PATCH')
-                                    <button type="submit" class="btn btn-outline btn-sm">
-                                        {{ $user->role === 'admin' ? 'Demote' : 'Promote' }}
-                                    </button>
-                                </form>
                                 @if($user->id !== auth()->id())
                                     <form method="POST" action="{{ route('admin.users.destroy', $user) }}" onsubmit="return confirm('Delete this user? This cannot be undone.')">
                                         @csrf @method('DELETE')
                                         <button type="submit" class="btn btn-ghost btn-sm" style="color:var(--danger);">Delete</button>
                                     </form>
+                                @else
+                                    <span style="font-size:12px;color:var(--light-gray);font-style:italic;">That's you</span>
                                 @endif
                             </div>
                         </td>

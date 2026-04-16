@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
-use Illuminate\Http\Request;
 
 class UserController extends Controller
 {
@@ -14,14 +13,6 @@ class UserController extends Controller
         return view('admin.users.index', compact('users'));
     }
 
-    public function toggleRole(User $user)
-    {
-        $user->update([
-            'role' => $user->role === 'admin' ? 'author' : 'admin',
-        ]);
-
-        return back()->with('success', "User {$user->name}'s role updated to {$user->role}.");
-    }
 
     public function destroy(User $user)
     {

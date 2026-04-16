@@ -51,7 +51,6 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::get('/', [AdminDashboardController::class, 'index'])->name('dashboard');
 
     Route::get('/users', [AdminUserController::class, 'index'])->name('users.index');
-    Route::patch('/users/{user}/toggle-role', [AdminUserController::class, 'toggleRole'])->name('users.toggleRole');
     Route::delete('/users/{user}', [AdminUserController::class, 'destroy'])->name('users.destroy');
 
     Route::get('/posts', [AdminPostController::class, 'index'])->name('posts.index');
