@@ -9,6 +9,7 @@ use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\PageController;
 use App\Http\Controllers\ContactController;
+use App\Http\Controllers\AiAssistController;
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
 use App\Http\Controllers\Admin\UserController as AdminUserController;
 use App\Http\Controllers\Admin\PostController as AdminPostController;
@@ -47,6 +48,14 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+
+    // AI Writing Assistant
+    Route::prefix('ai')->name('ai.')->middleware('throttle:15,1')->group(function () {
+        Route::post('/generate-excerpt', [AiAssistController::class, 'generateExcerpt'])->name('excerpt');
+        Route::post('/suggest-category', [AiAssistController::class, 'suggestCategory'])->name('category');
+        Route::post('/improve-writing', [AiAssistController::class, 'improveWriting'])->name('improve');
+        Route::post('/generate-outline', [AiAssistController::class, 'generateOutline'])->name('outline');
+    });
 });
 
 // Public post view - must come AFTER authenticated routes to avoid conflicts

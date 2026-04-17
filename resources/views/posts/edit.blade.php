@@ -25,6 +25,10 @@
                         <input type="file" name="featured_image" accept="image/*" style="display:none;">
                     </label>
                 </div>
+                <button type="button" class="ai-trigger" id="ai-trigger" onclick="toggleAiPanel()">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-right:2px;"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/></svg>
+                    AI Assist
+                </button>
             </div>
             <div class="editor-toolbar-right">
                 <label class="form-check" style="font-size:14px;gap:6px;">
@@ -34,6 +38,9 @@
                 <button type="submit" class="btn btn-dark btn-sm">Update</button>
             </div>
         </div>
+
+        {{-- AI Panel --}}
+        @include('posts.partials.ai-panel')
 
         @if($errors->any())
             <div class="alert alert-error">
