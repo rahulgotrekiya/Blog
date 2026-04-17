@@ -7,6 +7,7 @@ use App\Models\Post;
 use App\Models\User;
 use App\Models\Comment;
 use App\Models\Category;
+use App\Models\ContactMessage;
 
 class DashboardController extends Controller
 {
@@ -18,6 +19,7 @@ class DashboardController extends Controller
             'published_posts' => Post::where('is_published', true)->count(),
             'total_comments' => Comment::count(),
             'total_categories' => Category::count(),
+            'unread_messages' => ContactMessage::where('is_read', false)->count(),
         ];
 
         $recentPosts = Post::with('user')->latest()->limit(5)->get();

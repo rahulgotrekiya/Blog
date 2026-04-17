@@ -34,6 +34,10 @@
                 <h3>Categories</h3>
                 <div class="stat-value">{{ number_format($stats['total_categories']) }}</div>
             </div>
+            <div class="stat-card animate-fade-in-up stagger-6">
+                <h3>Messages</h3>
+                <div class="stat-value">{{ number_format($stats['unread_messages']) }} <span style="font-size:0.6em;color:var(--light-gray);">unread</span></div>
+            </div>
         </div>
 
         {{-- Recent Activity --}}

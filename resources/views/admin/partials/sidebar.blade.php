@@ -28,6 +28,12 @@
                 Categories
             </a>
         </li>
+        <li class="admin-nav-item">
+            <a href="{{ route('admin.messages.index') }}" class="{{ request()->routeIs('admin.messages.*') ? 'active' : '' }}">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                Messages
+            </a>
+        </li>
         <li class="admin-nav-item" style="margin-top:24px;border-top:1px solid rgba(255,255,255,0.1);padding-top:12px;">
             <a href="{{ route('home') }}">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
