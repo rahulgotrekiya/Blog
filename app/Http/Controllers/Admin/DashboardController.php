@@ -15,8 +15,11 @@ class DashboardController extends Controller
     {
         $stats = [
             'total_users' => User::count(),
+            'users_this_week' => User::where('created_at', '>=', now()->subWeek())->count(),
             'total_posts' => Post::count(),
+            'posts_this_week' => Post::where('created_at', '>=', now()->subWeek())->count(),
             'published_posts' => Post::where('is_published', true)->count(),
+            'draft_posts' => Post::where('is_published', false)->count(),
             'total_comments' => Comment::count(),
             'total_categories' => Category::count(),
             'unread_messages' => ContactMessage::where('is_read', false)->count(),

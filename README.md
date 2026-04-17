@@ -113,8 +113,8 @@ database/
 - [ ] **Login to Read More** — Restrict full post content to logged-in users only
 - [x] **Navigation Bar** — Public nav with Home, About, and Contact Us pages added
 - [x] **About Page** — Static page describing the project
-- [ ] **Contact Us (Admin Inbox)** — Contact form that sends messages to the admin panel
-- [ ] **Remove Comment Count** — Clean up comment count display from the admin panel
+- [x] **Contact Us (Admin Inbox)** — Contact form that sends messages to the admin panel
+- [x] **Remove Comment Count** — Clean up comment count display from the admin panel
 
 ---
 
