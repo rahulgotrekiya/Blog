@@ -7,14 +7,31 @@ use Illuminate\Support\Facades\Log;
 
 class GeminiService
 {
-    protected string $apiKey;
-    protected string $model;
-    protected string $baseUrl = 'https://generativelanguage.googleapis.com/v1beta/models';
+    protected string $provider;  // 'gemini' or 'groq'
+
+    // Gemini
+    protected string $geminiApiKey;
+    protected string $geminiModel;
+    protected string $geminiBaseUrl = 'https://generativelanguage.googleapis.com/v1beta/models';
+
+    // Groq (OpenAI-compatible)
+    protected string $groqApiKey;
+    protected string $groqModel;
+    protected string $groqBaseUrl = 'https://api.groq.com/openai/v1/chat/completions';
 
     public function __construct()
     {
-        $this->apiKey = config('services.gemini.api_key', '');
-        $this->model = config('services.gemini.model', 'gemini-2.0-flash');
+        $this->geminiApiKey = config('services.gemini.api_key', '');
+        $this->geminiModel  = config('services.gemini.model', 'gemini-2.0-flash');
+        $this->groqApiKey   = config('services.groq.api_key', '');
+        $this->groqModel    = config('services.groq.model', 'llama3-8b-8192');
+
+        // Auto-select provider: prefer Groq if key is set, fall back to Gemini
+        if (!empty($this->groqApiKey)) {
+            $this->provider = 'groq';
+        } else {
+            $this->provider = 'gemini';
+        }
     }
 
     /**
@@ -108,15 +125,27 @@ PROMPT;
     }
 
     /**
-     * Make the actual API call to Google Gemini.
+     * Route the call to the correct provider.
      */
     protected function call(string $prompt): string
     {
-        if (empty($this->apiKey)) {
+        if ($this->provider === 'groq') {
+            return $this->callGroq($prompt);
+        }
+
+        return $this->callGemini($prompt);
+    }
+
+    /**
+     * Call Google Gemini API.
+     */
+    protected function callGemini(string $prompt): string
+    {
+        if (empty($this->geminiApiKey)) {
             throw new \RuntimeException('Gemini API key is not configured. Add GEMINI_API_KEY to your .env file.');
         }
 
-        $url = "{$this->baseUrl}/{$this->model}:generateContent?key={$this->apiKey}";
+        $url = "{$this->geminiBaseUrl}/{$this->geminiModel}:generateContent?key={$this->geminiApiKey}";
 
         $response = Http::timeout(30)->post($url, [
             'contents' => [
@@ -127,36 +156,85 @@ PROMPT;
                 ],
             ],
             'generationConfig' => [
-                'temperature' => 0.7,
+                'temperature'     => 0.7,
                 'maxOutputTokens' => 2048,
             ],
         ]);
 
         if ($response->failed()) {
             $errorData = $response->json();
-            $errorMsg = $errorData['error']['message'] ?? 'AI service is temporarily unavailable. Please try again.';
-            
+            $errorMsg  = $errorData['error']['message'] ?? 'AI service is temporarily unavailable.';
+
             Log::error('Gemini API error', [
                 'status' => $response->status(),
-                'body' => $errorData,
+                'body'   => $errorData,
             ]);
-            
+
             if ($response->status() === 429) {
-                throw new \RuntimeException('Quota exceeded or rate limit hit. Check your Google AI free tier limits or wait a minute.');
+                throw new \RuntimeException('❌ Quota exceeded or rate limit hit. Check your Google AI free tier limits or wait a minute.');
             }
             if ($response->status() === 400 && str_contains($errorMsg, 'API key')) {
-                throw new \RuntimeException('Invalid Gemini API Key. Please check your .env file.');
+                throw new \RuntimeException('❌ Invalid Gemini API Key. Please check your .env file.');
             }
 
-            throw new \RuntimeException('Gemini API Error: ' . $errorMsg);
+            throw new \RuntimeException('❌ Gemini API Error: ' . $errorMsg);
         }
 
         $data = $response->json();
-
         $text = $data['candidates'][0]['content']['parts'][0]['text'] ?? null;
 
         if (!$text) {
             Log::warning('Gemini API returned empty response', ['data' => $data]);
+            throw new \RuntimeException('AI could not generate a response. Try with different content.');
+        }
+
+        return trim($text);
+    }
+
+    /**
+     * Call Groq API (OpenAI-compatible chat/completions endpoint).
+     */
+    protected function callGroq(string $prompt): string
+    {
+        if (empty($this->groqApiKey)) {
+            throw new \RuntimeException('Groq API key is not configured. Add GROQ_API_KEY to your .env file.');
+        }
+
+        $response = Http::timeout(30)
+            ->withToken($this->groqApiKey)
+            ->post($this->groqBaseUrl, [
+                'model'       => $this->groqModel,
+                'messages'    => [
+                    ['role' => 'user', 'content' => $prompt],
+                ],
+                'temperature' => 0.7,
+                'max_tokens'  => 2048,
+            ]);
+
+        if ($response->failed()) {
+            $errorData = $response->json();
+            $errorMsg  = $errorData['error']['message'] ?? 'Groq service is temporarily unavailable.';
+
+            Log::error('Groq API error', [
+                'status' => $response->status(),
+                'body'   => $errorData,
+            ]);
+
+            if ($response->status() === 429) {
+                throw new \RuntimeException('❌ Groq rate limit hit. Wait a moment and try again.');
+            }
+            if ($response->status() === 401) {
+                throw new \RuntimeException('❌ Invalid Groq API Key. Please check your .env file.');
+            }
+
+            throw new \RuntimeException('❌ Groq API Error: ' . $errorMsg);
+        }
+
+        $data = $response->json();
+        $text = $data['choices'][0]['message']['content'] ?? null;
+
+        if (!$text) {
+            Log::warning('Groq API returned empty response', ['data' => $data]);
             throw new \RuntimeException('AI could not generate a response. Try with different content.');
         }
 
