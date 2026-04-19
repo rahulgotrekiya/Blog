@@ -37,9 +37,156 @@
     @endif
 
     {{-- Article Body --}}
-    <div class="article-body">
-        {!! nl2br(e($post->body)) !!}
-    </div>
+    @auth
+        <div class="article-body">
+            {!! nl2br(e($post->body)) !!}
+        </div>
+    @else
+        {{-- Guest: faded text preview + Medium-style inline gate card --}}
+        <div class="gate-wrap">
+            <div class="article-body article-body--gated">
+                {!! nl2br(e($post->body)) !!}
+            </div>
+
+            {{-- Inline gate card — sits below the fade, exactly like Medium --}}
+            <div class="reading-gate">
+                {{-- Sparkle / star icon (Medium uses a coloured star) --}}
+                <div class="reading-gate-icon" aria-hidden="true">
+                    <svg width="76" height="76" viewBox="0 0 76 76" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="38" cy="38" r="38" fill="#FBF0E0"/>
+                        <path d="M38 16 L41.5 31.5 L57 35 L41.5 38.5 L38 54 L34.5 38.5 L19 35 L34.5 31.5 Z" fill="#F5C842"/>
+                        <path d="M52 20 L53.5 25.5 L59 27 L53.5 28.5 L52 34 L50.5 28.5 L45 27 L50.5 25.5 Z" fill="#F5C842" opacity="0.7"/>
+                        <path d="M24 48 L25 51.5 L28.5 52.5 L25 53.5 L24 57 L23 53.5 L19.5 52.5 L23 51.5 Z" fill="#F5C842" opacity="0.5"/>
+                    </svg>
+                </div>
+
+                <h2 class="reading-gate-headline">This story is for signed-in readers.</h2>
+                <p class="reading-gate-sub">Sign in to keep reading — it's free.</p>
+
+                <div class="reading-gate-actions">
+                    <a href="{{ route('login') }}"    class="reading-gate-btn reading-gate-btn--outline">Sign in</a>
+                    <a href="{{ route('register') }}" class="reading-gate-btn reading-gate-btn--primary">Create free account</a>
+                </div>
+
+                <p class="reading-gate-footer">
+                    Already have an account? <a href="{{ route('login') }}">Sign in</a>
+                </p>
+            </div>
+        </div>
+
+        <style>
+        /* ── Wrapper keeps fade + gate in the same stacking context ─── */
+        .gate-wrap {
+            position: relative;
+        }
+
+        /* ── Faded article preview ──────────────────────────────── */
+        .article-body--gated {
+            position: relative;
+            max-height: 52vh;
+            overflow: hidden;
+            -webkit-mask-image: linear-gradient(to bottom, black 40%, transparent 100%);
+                    mask-image: linear-gradient(to bottom, black 40%, transparent 100%);
+        }
+
+        /* ── Inline gate card ───────────────────────────────────── */
+        .reading-gate {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            padding: 48px 32px 52px;
+            margin: 0 0 48px;
+        }
+
+        .reading-gate-icon {
+            margin-bottom: 24px;
+        }
+
+        .reading-gate-headline {
+            font-family: var(--font-serif);
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--off-black);
+            letter-spacing: -0.3px;
+            margin: 0 0 10px;
+            line-height: 1.2;
+        }
+
+        .reading-gate-sub {
+            font-size: 16px;
+            color: var(--medium-gray);
+            margin: 0 0 32px;
+            font-family: var(--font-sans);
+        }
+
+        .reading-gate-actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .reading-gate-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 11px 28px;
+            border-radius: var(--radius-full);
+            font-size: 15px;
+            font-weight: 500;
+            font-family: var(--font-sans);
+            transition: var(--transition);
+            white-space: nowrap;
+            text-decoration: none;
+            min-width: 160px;
+        }
+
+        .reading-gate-btn--primary {
+            background: var(--off-black);
+            color: var(--white);
+            border: 1px solid var(--off-black);
+        }
+
+        .reading-gate-btn--primary:hover {
+            background: var(--black);
+            color: var(--white);
+        }
+
+        .reading-gate-btn--outline {
+            background: transparent;
+            color: var(--off-black);
+            border: 1px solid var(--off-black);
+        }
+
+        .reading-gate-btn--outline:hover {
+            background: var(--off-white);
+        }
+
+        .reading-gate-footer {
+            font-size: 13px;
+            color: var(--light-gray);
+            margin: 0;
+        }
+
+        .reading-gate-footer a {
+            color: var(--off-black);
+            font-weight: 500;
+            text-decoration: underline;
+            text-underline-offset: 2px;
+        }
+
+        @media (max-width: 500px) {
+            .reading-gate { padding: 40px 20px 44px; }
+            .reading-gate-headline { font-size: 22px; }
+            .reading-gate-btn { min-width: 130px; font-size: 14px; }
+        }
+        </style>
+    @endauth
+
+
 
     {{-- Likes & Actions --}}
     <div class="article-actions">

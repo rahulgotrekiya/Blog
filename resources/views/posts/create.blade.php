@@ -20,8 +20,8 @@
                 <div class="form-group" style="margin:0;">
                     <label class="btn btn-outline btn-sm" style="cursor:pointer;">
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
-                        Cover Image
-                        <input type="file" name="featured_image" accept="image/*" style="display:none;" onchange="this.parentElement.querySelector('span')?.remove(); const s=document.createElement('span'); s.textContent='✓ Selected'; this.parentElement.appendChild(s);">
+                        <span class="cover-label-text">Cover Image</span>
+                        <input type="file" name="featured_image" accept="image/*" style="display:none;">
                     </label>
                 </div>
                 <button type="button" class="ai-trigger" id="ai-trigger" onclick="toggleAiPanel()">
@@ -51,6 +51,12 @@
 
         <input type="text" name="title" class="editor-title" placeholder="Title" value="{{ old('title') }}" required>
 
+        {{-- Cover image preview --}}
+        <div id="cover-preview-wrap" style="display:none;position:relative;margin-bottom:20px;border-radius:var(--radius-md);overflow:hidden;max-height:320px;">
+            <img id="cover-preview-img" src="" alt="Cover preview" style="width:100%;max-height:320px;object-fit:cover;display:block;">
+            <button type="button" onclick="removeCoverImage()" style="position:absolute;top:12px;right:12px;background:rgba(0,0,0,0.55);border:none;color:#fff;width:32px;height:32px;border-radius:50%;cursor:pointer;font-size:18px;line-height:1;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(4px);" title="Remove image">&times;</button>
+        </div>
+
         <div class="form-group">
             <input type="text" name="excerpt" class="form-input" placeholder="Write a brief excerpt..." value="{{ old('excerpt') }}" style="border:none;font-size:18px;color:var(--medium-gray);padding-left:0;">
         </div>
@@ -58,4 +64,36 @@
         <textarea name="body" class="editor-body" placeholder="Tell your story..." required>{{ old('body') }}</textarea>
     </form>
 </div>
+
+<script>
+function initCoverPreview() {
+    const input = document.querySelector('input[name="featured_image"]');
+    const wrap  = document.getElementById('cover-preview-wrap');
+    const img   = document.getElementById('cover-preview-img');
+    const label = input.closest('label');
+
+    input.addEventListener('change', function() {
+        if (this.files && this.files[0]) {
+            const reader = new FileReader();
+            reader.onload = e => {
+                img.src = e.target.result;
+                wrap.style.display = 'block';
+                label.querySelector('.cover-label-text').textContent = 'Change Image';
+            };
+            reader.readAsDataURL(this.files[0]);
+        }
+    });
+}
+
+function removeCoverImage() {
+    const input = document.querySelector('input[name="featured_image"]');
+    const wrap  = document.getElementById('cover-preview-wrap');
+    const label = input.closest('label');
+    input.value = '';
+    wrap.style.display = 'none';
+    label.querySelector('.cover-label-text').textContent = 'Cover Image';
+}
+
+document.addEventListener('DOMContentLoaded', initCoverPreview);
+</script>
 @endsection

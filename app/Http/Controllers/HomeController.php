@@ -10,7 +10,7 @@ class HomeController extends Controller
 {
     public function index(Request $request)
     {
-        $featured = Post::published()->featured()->with(['user', 'category'])->latest('published_at')->first();
+        $featured = Post::published()->featured()->with(['user', 'category'])->latest('published_at')->get();
 
         $posts = Post::published()
             ->with(['user', 'category'])

@@ -96,6 +96,9 @@ class PostController extends Controller
                 Storage::disk('public')->delete($post->featured_image);
             }
             $validated['featured_image'] = $request->file('featured_image')->store('posts', 'public');
+        } elseif ($request->input('remove_featured_image') === '1' && $post->featured_image) {
+            Storage::disk('public')->delete($post->featured_image);
+            $validated['featured_image'] = null;
         }
 
         if (!empty($validated['is_published']) && !$post->published_at) {
